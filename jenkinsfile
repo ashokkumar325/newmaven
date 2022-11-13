@@ -1,0 +1,44 @@
+pipeline
+{
+    agent any
+    stages
+    {
+       stage('countinous_download')
+        {
+           steps
+           {
+              git 'https://github.com/krishnain/maven.git' 
+           }
+        }
+        stage('countinous_build')
+        {
+           steps
+           {
+             sh 'mvn package' 
+           }
+        } 
+        stage('countinous_deploye')
+        {
+           steps
+           {
+             deploy adapters: [tomcat9(credentialsId: '963ce714-930f-417c-bec0-41b92c8a6f00', path: '', url: 'http://172.31.19.182:8080')], contextPath: 'newapp', war: '**/*.war'
+           }
+        } 
+        stage('countinous_testing')
+        {
+           steps
+           {
+              git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+              sh 'java -jar /var/lib/jenkins/workspace/Dp1@2/testing.jar'
+           }
+        }
+        stage('countinous_Deliver')
+        {
+           steps
+           {
+              deploy adapters: [tomcat9(credentialsId: '963ce714-930f-417c-bec0-41b92c8a6f00', path: '', url: 'http://172.31.16.152:8080')], contextPath: 'myapp', war: '**/*.war'
+           } 
+        }
+    }
+    
+}
